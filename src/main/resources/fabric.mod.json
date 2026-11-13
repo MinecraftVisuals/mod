@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "pingbar",
+  "version": "1.0.0",
+  "name": "PingBar",
+  "description": "Stumble Guys style ping bar HUD at the top center of the screen.",
+  "authors": ["YourName"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.pingbar.PingBarClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21",
+    "java": ">=21"
+  }
+}
