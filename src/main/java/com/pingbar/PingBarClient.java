@@ -1,6 +1,7 @@
 package com.pingbar;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -33,8 +34,8 @@ public class PingBarClient implements ClientModInitializer {
     // Tuned for Lilita One at "size": 10 in ping.json
     private static final float BIG_SCALE = 1.736f;
     private static final float MS_SCALE  = 1.0f;
-    private static final float BIG_Y = 10.85f;   // BASELINE_Y - 7 * BIG_SCALE
-    private static final float MS_Y  = 16.0f;    // BASELINE_Y - 7 * MS_SCALE
+    private static final float BIG_Y = 10.85f;
+    private static final float MS_Y  = 16.0f;
 
     private static final int DIM    = 0x66FFFFFF;
     private static final int GREEN  = 0xFF5CE65C;
@@ -48,6 +49,15 @@ public class PingBarClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOG.info("PingBar loaded");
+
+        // Test message: shows in chat when you join a world
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
+            client.execute(() -> {
+                if (client.player != null) {
+                    client.player.sendMessage(Text.literal("PingBar is loaded"), false);
+                }
+            }));
+
         HudRenderCallback.EVENT.register((ctx, tickCounter) -> {
             try {
                 render(ctx);
