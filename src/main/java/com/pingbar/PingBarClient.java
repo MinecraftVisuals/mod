@@ -5,13 +5,20 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PingBarClient implements ClientModInitializer {
+
+    private static final Logger LOG = LoggerFactory.getLogger("PingBar");
+    private static boolean failed = false;
+    private static boolean drew = false;
 
     // Design units = pixels of the 1079 px wide Stumble Guys screenshot
     private static final float DESIGN_W = 1079f;
@@ -40,17 +47,33 @@ public class PingBarClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        HudRenderCallback.EVENT.register((ctx, tickCounter) -> render(ctx));
+        LOG.info("PingBar loaded");
+        HudRenderCallback.EVENT.register((ctx, tickCounter) -> {
+            try {
+                render(ctx);
+            } catch (Exception e) {
+                if (!failed) {
+                    LOG.error("PingBar render failed", e);
+                    failed = true;
+                }
+            }
+        });
     }
 
     private void render(DrawContext ctx) {
         MinecraftClient mc = MinecraftClient.getInstance();
-        if (mc.player == null || mc.getNetworkHandler() == null) return;
+        if (mc.player == null) return;
         if (mc.options.hudHidden) return;
 
-        PlayerListEntry entry = mc.getNetworkHandler()
-                .getPlayerListEntry(mc.player.getUuid());
+        ClientPlayNetworkHandler handler = mc.getNetworkHandler();
+        PlayerListEntry entry = handler == null ? null
+                : handler.getPlayerListEntry(mc.player.getUuid());
         int ping = entry == null ? 0 : entry.getLatency();
+
+        if (!drew) {
+            LOG.info("PingBar drawing, ping={}", ping);
+            drew = true;
+        }
 
         int lit; int color;
         if (ping < 40)       { lit = 4; color = GREEN; }
