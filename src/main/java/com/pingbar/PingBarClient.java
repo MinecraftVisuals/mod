@@ -15,23 +15,23 @@ public class PingBarClient implements ClientModInitializer {
 
     // Design units = pixels of the 1079 px wide Stumble Guys screenshot
     private static final float DESIGN_W = 1079f;
-    private static final float BASELINE_Y = 23f;      // bottom of bars + text
+    private static final float BASELINE_Y = 23f;
     private static final float[] BAR_H = {5f, 8f, 10.5f, 12.5f};
     private static final float BAR_W = 3.5f;
     private static final float BAR_PITCH = 5.5f;
-    private static final float TEXT_START = 26f;      // text x, from icon left
+    private static final float TEXT_START = 25.4f;
     private static final float MS_GAP = 1.5f;
     private static final float OUTLINE = 0.9f;
 
-    // ---- TUNE THESE once with your font ----
-    private static final float BIG_SCALE = 1.8f;      // "65" size
-    private static final float MS_SCALE  = 1.1f;      // "ms" size
-    private static final float BIG_Y = 8.0f;          // top of "65" text box
-    private static final float MS_Y  = 13.5f;         // top of "ms" text box
+    // Tuned for Lilita One at "size": 10 in ping.json
+    private static final float BIG_SCALE = 1.736f;
+    private static final float MS_SCALE  = 1.0f;
+    private static final float BIG_Y = 10.85f;   // BASELINE_Y - 7 * BIG_SCALE
+    private static final float MS_Y  = 16.0f;    // BASELINE_Y - 7 * MS_SCALE
 
     private static final int DIM    = 0x66FFFFFF;
     private static final int GREEN  = 0xFF5CE65C;
-    private static final int YELLOW = 0xFFEBD46B;     // matches your 65 ms shot
+    private static final int YELLOW = 0xFFF0D46B;
     private static final int ORANGE = 0xFFF09A3C;
     private static final int RED    = 0xFFE64B4B;
 
@@ -52,7 +52,6 @@ public class PingBarClient implements ClientModInitializer {
                 .getPlayerListEntry(mc.player.getUuid());
         int ping = entry == null ? 0 : entry.getLatency();
 
-        // lit bars + color by ping (thresholds are a guess)
         int lit; int color;
         if (ping < 40)       { lit = 4; color = GREEN; }
         else if (ping < 100) { lit = 3; color = YELLOW; }
@@ -73,7 +72,6 @@ public class PingBarClient implements ClientModInitializer {
         m.push();
         m.scale(s, s, 1f);
 
-        // signal bars (drawn in quarter-units for sub-pixel precision)
         m.push();
         m.scale(0.25f, 0.25f, 1f);
         for (int i = 0; i < 4; i++) {
